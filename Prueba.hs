@@ -32,17 +32,20 @@ manuel = UnJugador{
 
 type Accion = Jugador -> Jugador
 
+precioPropiedad :: Propiedad -> Int
+precioPropiedad unaPropiedad = snd unaPropiedad
+
 pasarPorElBanco :: Accion
-pasarPorElBanco unJugador = (aumentaDinero 40 . cambiarATactica "pasarPorElBanco") unJugador
+pasarPorElBanco unJugador = cambiarTacticaACompradorCompulsivo . aumentaDinero 40 $ unJugador
 
-aumentaDinero ::  Jugador -> Int  -> Jugador
-aumentaDinero unJugador unDinero = unJugador {cantDinero = cantDinero unJugador + unDinero}
+aumentaDinero ::  Int -> Jugador  -> Jugador
+aumentaDinero unDinero alguienQueJuega = alguienQueJuega {cantDinero = cantDinero alguienQueJuega + unDinero}
 
-disminuyeDinero ::  Jugador -> Int  -> Jugador
-disminuyeDinero unJugador unDinero = unJugador {cantDinero = cantDinero unJugador - unDinero}
+disminuyeDinero ::  Int -> Jugador  -> Jugador
+disminuyeDinero unDinero unJugador = unJugador {cantDinero = cantDinero unJugador - unDinero}
 
-cambiarATactica :: String -> Jugador -> Jugador
-cambiarATactica unaTactica unJugador = unJugador{tactica = unaTactica }
+cambiarTacticaACompradorCompulsivo :: Jugador -> Jugador
+cambiarTacticaACompradorCompulsivo  unJugador = unJugador {tactica = "Comprador compulsivo"}
 
 enojarse :: Accion
 enojarse unJugador = aumentaDinero 50 . agregaAccion gritar $ unJugador
@@ -53,19 +56,32 @@ agregaAccion unaAccion unJugador = unJugador {acciones = acciones unJugador ++ [
 gritar :: Accion
 gritar unJugador = agregaAlNombre "AHHH" unJugador
 
-agregaAlNombre :: Jugador -> String -> Jugador
-agregaAlNombre unJugador unaPalabra = unJugador{nombre= unaPalabra ++ nombre unJugador}
+agregaAlNombre :: String -> Jugador -> Jugador
+agregaAlNombre unaPalabra unJugador = unJugador{nombre= unaPalabra ++ nombre unJugador}
 
-subastar :: Accion
-subastar unJugador = undefined
 
 pagarAAccionistas :: Accion
 pagarAAccionistas unJugador
-    | tieneTactica "Accionista" = unJugador {cantDinero = cantDinero unJugador + 200}
-    | otherwise = unJugador{cantDinero = cantDinero unJugador -100}
+    | tactica unJugador == "Accionista" = aumentaDinero 200 unJugador
+    | otherwise = disminuyeDinero 100 unJugador
 
-tieneTactica :: Jugador -> String -> Bool
-tieneTactica unJugador unaTactica = unJugador{tactica = unaTactica}
+{-subastar :: Accion
+subastar unJugador = undefined
 
+puedenGanarPropiedad :: Jugador -> Bool
+puedenGanarPropiedad unJugador = tactica unJugador == "Oferente singular" || tactica unJugador == "Accionista"
+
+subastar: al momento de una subasta solo quienes tengan como tácticas “Oferente singular” o “Accionista” podrán ganar la propiedad. 
+Ganar implica restar el precio de la propiedad de su dinero y sumar la nueva adquisición a sus propiedades.
+
+ganarPropiedad :: Accion
+-}
+propiedadBarata :: Propiedad -> Bool
+propiedadBarata unaPropiedad = precioPropiedad unaPropiedad < 150
+
+precioAlquiler :: Propiedad -> Int
+precioAlquiler unaPropiedad
+    | propiedadBarata unaPropiedad = 10
+    | otherwise = 20
 
 
