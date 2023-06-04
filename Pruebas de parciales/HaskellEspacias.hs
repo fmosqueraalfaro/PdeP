@@ -51,10 +51,9 @@ durabilidadDeNaves unasNaves = map (durabilidad) unasNaves
 --3
 {-
 ataqueEntreNaves :: Nave -> Nave -> Nave
-ataqueEntreNaves naveAtacada naveQueAtaca
-    | (escudo . activarPoder $ naveAtacada) >= (ataque . activarPoder $ naveQueAtaca) = naveAtacada{escudo = escudo naveAtacada - ataque naveQueAtaca} 
-    | otherwise = naveAtacada{durabilidad = durabilidad naveAtacada - diferenciaEntreAtaqueYEscudo naveAtacada naveQueAtaca}
-
+ataqueEntreNaves naveAtacada naveAtacante
+    | (escudo . activarPoder $ naveAtacada) >= (ataque . activarPoder $ naveAtacantecada{escudo = escudo naveAtacada - ataque naveAtacante} 
+    | otherwise = naveAtacada{durabilidad = durabilidad naveAtacada - diferenciaEntreAtaqueYEscudo naveAtacada naveAtacante}
 
 activarPoder :: [Poder] -> Nave -> Nave
 activarPoder unosPoderes unaNave = foldr aplicarPoderes unaNave unosPoderes
@@ -63,7 +62,7 @@ aplicarPoderes :: Poder -> Nave -> Nave
 aplicarPoderes unPoder unaNave = unPoder unaNave
 
 diferenciaEntreAtaqueYEscudo :: Nave -> Nave -> Int
-diferenciaEntreAtaqueYEscudo naveAtacada naveQueAtaca = abs (escudo naveAtacada - ataque naveQueAtaca)
+diferenciaEntreAtaqueYEscudo naveAtacada naveAtacante = abs (escudo naveAtacada - ataque naveAtacante)
 -}
 --4
 
@@ -76,3 +75,22 @@ type Estrategia = (Nave -> Bool)
 
 navesDebiles :: Estrategia
 navesDebiles unaNave = escudo unaNave < 200
+
+navesConCiertaPeligrosidad :: Int -> Estrategia
+navesConCiertaPeligrosidad unValor unaNave = unValor < ataque unaNave
+{-
+navesQueQuedarianFueraDeCombate :: Nave -> Nave -> Bool
+navesQueQuedarianFueraDeCombate naveAtacada naveAtacante = durabilidad . ataqueEntreNaves $ naveAtacada naveAtacante == 0
+-}
+
+usarALionel :: Estrategia
+usarALionel unaNave = ataque unaNave > 5000
+
+{-
+misionSorpresa :: Nave -> Nave -> Nave
+misionSorpresa unaNave otraNave 
+    |navesDebiles unaNave = ataqueEntreNaves unaNave otraNave
+    |navesConCientaPeligrosidad 300 unaNave = ataqueEntreNaves unaNave OtraNave
+    |navesQueQuedarianFueraDeCombate unaNave otraNave = ataqueEntreNaves unaNave OtraNave
+    |usarALionel otraNave = ataqueEntreNaves unaNave otraNave
+    -}
