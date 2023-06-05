@@ -1,5 +1,4 @@
-data Participante = 
-    Participante{
+data Participante = Participante{
     nombre :: String,
     trucosDeCocina :: [Truco],
     platoEspecial :: Plato
