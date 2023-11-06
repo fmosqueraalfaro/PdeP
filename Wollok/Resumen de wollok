@@ -1,0 +1,262 @@
+Self
+self es una manera con la cual el objeto se conoce a sí mismo. Con self, puedo enviar mensajes que entienda el propio objeto, para poder abstraer lógica repetida en otros métodos del mismo objeto. self es una referencia al mismo objeto.
+Esto, con self, se puede resolver de la siguiente manera:
+object camionDeVerduras {
+  var kilometraje = 700000
+  var cajones = 10
+
+  method pesoCarga() = cajones * 50
+
+  method velocidadMaxima() = 80 - self.pesoCarga() / 500
+}
+Hacemos el resto de los camiones, haciendo los métodos con las firmas necesarias (por ejemplo, recorrerRuta podría tener diferentes firmas y no estar en el scannion5000).
+Polimorfismo
+el polimorfismo en objetos es la capacidad de que un objeto pueda utilizar indistintamente a otros objetos, siendo que potencialmente estos otros sean distintos. Con esto en mente, deberíamos cambiar el método recorrerRuta en todos los camiones:
+object camionDeVerduras {
+	method recorrerRuta(extension, velocidad){
+		kilometraje = kilometraje + extension
+	}
+}
+object scanion5000 {
+	method recorrerRuta(extension, velocidad){
+		// no hace nada
+	}
+}
+
+object camionCerealero {
+
+	method recorrerRuta(extension, velocidad){
+		nivelDeterioro += 0.max(velocidad - 45)
+	}
+}
+
+
+
+
+Colecciones
+•	listas: en donde los elementos tienen un orden y puede haber elementos repetidos. Se definen mediante el literal [ ], por ejemplo:
+var bolsaDelSuper = [leche, manteca, jugo, jugo, jugo]
+•	conjuntos: no hay orden en los elementos y no puede haber elementos repetidos. Se definen mediante el literal #{ } y también son llamados sets, por ejemplo:
+var numeros = #{1, 2, 3, 4}
+
+Hicimos un ejercicio para conocer y practicar los mensajes que entienden las colecciones. Entre ellos estaban, size, add, remove, filter, map, forEach
+
+¿Qué diferencia hay entre map y forEach? El primero lo usamos para devolver una lista y no queremos que haya efecto y el segundo para cuando queremos afectar a un conjunto de objetos.
+
+Testing
+
+describe "Test de mario" {
+
+	test "Mario al evolucionar el ataque a bola de fuego" {
+		
+		mario.evolucionar()
+		assert.equals("Bola de fuego", mario.ataque())
+
+	}
+
+	test "Mario al recibir un ataque se agota"{
+		mario.recibirAtaque(200)
+		assert.equals(200,mario.agotamiento())
+}
+
+	test "Mario descansa luego de un ataque"{
+		mario.recibirAtaque(200)
+		mario.descansar()
+		assert.equals(0,mario.agotamiento())
+	}
+
+}
+
+
+
+
+Clases
+¿Cómo hacemos para no repetir lógica entre objetos que hacen las mismas cosas? 😩 El paradigma orientado a objetos nos provee un mecanismo para resolver la repetición de comportamiento, ¡las clases! 🙌 Gracias a este nuevo concepto podemos abstraer la lógica repetida en un mismo “molde” para crear instancias a partir de él.
+Es importante tener en cuenta que:
+•	Todo objeto es siempre instancia de una y sólo una clase.
+•	No se puede cambiar la clase de un objeto en tiempo de ejecución.
+Mini machete
+Todo el comportamiento:
+•	En común, va en una superclase.
+•	En específico, va en la clase.
+•	En común con la superclase pero que hace alguito más, va redefinido con super en la clase.
+•	Que no me dice qué hacer la superclase, lo defino como método abstracto en la super y luego lo redefino en clase.
+Si tengo clases que:
+•	Comparten solo mensajes en común, necesito una interfaz.
+•	Además de los mensajes, también comparten comportamiento, necesito una superclase.
+Si tengo una clase que:
+•	Provee comportamiento y mensajes sin comportamiento, es una clase abstracta.
+•	Es todo comportamiento y no la quiero instanciar, es una clase abstracta.
+•	Es todo comportamiento y la quiero instanciar, es una clase concreta.
+Se puede heredar tanto de clases abstractas como de clases concretas.
+
+
+
+Diagrama de clases
+ 
+/'Para las clases polimorficas se usa, las interfaces son solo conjuntos de mensajes'/
+Cursante <|.. Estudiante : implementa 
+
+/'Para cuando conoce a "*" cantidad de esa clase'/
+Estudiante "*" <-left- docente : conoce/tiene
+
+/'Se usa cuando un objeto ES una clase'/
+Estudiante <|-- lucia : es
+Estudiante <|-- juan : es
+Estudiante <|-- perla : es
+Oyente <|-- unOyente : es
+
+/'Se usa cuando un objeto lo recibe por parámetro (es la más débil, es cuando algo queda medio desconexo)'/
+Examen <.. docente : usa
+ 
+
+/'
+ver cuando se usa:
+
+Implements: implementa una interfaz (comparte los mismos mensajes que otros, aprovechando el polimorfismo)
+su flecha es ..|>
+
+Extends: hereda de una clase
+su flecha es --|>
+'/
+
+
+
+ 
+
+Herencia
+Al tener lógica repetida entre clases podemos crear una nueva clase con esa lógica, dejando en cada una de las clases iniciales sólo lo particular de cada una.
+Super
+Siguiendo con nuestro ejemplo, imaginémonos que aparece la clase Gallina 🐔, cada Gallina emite el sonido “A River lo sigo a donde va” y cuando juegan también pierde energia, peeero también ponen un huevo 🐣. Entonces tendríamos que redefinir el método jugar, pero teniendo en cuenta que una parte de la lógica ya está definida en la superclase Animal. Para hacer esto vamos a combinar override (para redefinir un método de la superclase) con super (para ver que hace la superclase):
+class Gallina inherits Animal(sonido = "A River lo sigo a donde va") {
+	var huevosPuestos = 0
+
+	override method jugar(unTiempo) {
+	super(unTiempo)
+	huevosPuestos ++
+}
+}
+Podemos aprovechar super tanto para métodos que retornan algo (para obtener ese algo) como para métodos que no retornan nada (para ejecutar su comportamiento).
+Redefinición
+método abstracto escribiendo solo la firma de la siguiente manera:
+class Animal {
+	….
+	method recibirDueño()
+	….
+}
+
+❗ ❗ Es importante diferenciar recibirDueño() de recibirDueño() { }.
+Si una clase tiene un método abstracto, esta no puede ser instanciada. En nuestro ejemplo podemos tener gallinas, gatos y perros pero no animales a secas.
+Luego de hacer esto es importante redefinir el método en cada subclase con la palabra override:
+
+
+
+class Gallina inherits Animal(sonido = "A River lo sigo a donde va") {
+var huevosPuestos = 0
+
+	override method jugar(unTiempo) {
+	super(unTiempo)
+	huevosPuestos ++
+}
+
+	override method recibirDueño() { 
+	huevosPuestos = 0 /* el dueño llega y le roba los huevos*/
+}
+}
+Interfaces
+Una interfaz es un contrato que cumplen dos o más clases u objetos la cual obliga a que estos cumplan con la implementación de un conjunto de métodos.
+Cuando dos objetos o clases tienen una interfaz en común, es posible para un tercero utilizar sus instancias de forma polimórfica, aunque recordemos que el polimorfismo solo está si efectivamente un tercero interactúa indistintamente con ellos.
+Excepciones
+es una indicación de que algo salió mal en la ejecución de nuestro programa.
+•	Usando el mensaje error, el cual entienden los objetos y nos sirve para lanzar una excepción:
+self.error("mensaje del error")
+•	Usando throw y la clase Exception:
+ throw new Exception(message = "mensaje del error")
+También podemos crear nuestras propias excepciones . Para esto podemos crear una clase que herede de Exception. Esto nos va a ser útil más adelante.:
+class ExcepcionParticularDelPrograma inherits Exception {}
+y la lanzamos como antes:
+throw new ExcepcionParticularDelPrograma(message = "mensaje del error")
+Además, es importante que nuestros mensajes de excepción sean expresivos. Así si algo rompe  sabremos por qué .
+Ahora, todo bien, pero ¿para qué me sirven en la ejecución del programa? ¿Qué hacen?
+class Summer inherits Beth{
+  override method irseDeViaje(unRick) {
+    if (self.esLunes()) {
+      super(unRick)
+    } else {
+      throw new NoPuedoIrmeDeViajeException(message = "¡Sólo puedo irme de aventura los lunes!")
+    }
+  }
+
+
+}
+Luego de tirar la excepción se corta la ejecución del programa, por lo que si había código después, no será ejecutado. Además, decimos que las excepciones burbujean por lo que si otro objeto manda un mensaje y ese método lanza la excepción, también cortará el flujo de ejecución para ese objeto.
+Entonces, ¿si lanzamos una excepción esta subirá indefinidamente? Bueno, en realidad no, porque si esto pasara cada vez que se lanza una excepción terminaría nuestro programa. Así que ahora veremos una forma de manejar excepciones…
+Atrapando Excepciones
+Cuando sabemos qué hacer ante una excepción, tenemos la opción de atrapar la excepción y utilizar otro código que se tiene que ejecutar si ocurrió tal excepción.  
+En Wollok, esto se realiza de la siguiente forma:
+try {
+	// código que puede fallar
+} catch e : ExcepcionQueQuieroAtrapar {
+	// código a ejecutar si ocurre ExcepcionQueQuieroAtrapar
+}
+Algo a notar, es que la excepción a atrapar tiene que ser la que quiero atrapar y lo menos general posible. Si atrapo, por ejemplo, Exception, seguramente esté atrapando errores que no hubiese querido atrapar como errores de que no se entiende el mensaje o la división por cero).
+
+Herencia
+Como ya habíamos visto, la herencia la podemos utilizar cuando tenemos lógica repetida entre distintos objetos, y queremos agruparla.
+class JuegoViolento inherits Juego {
+method jugar(unUsuario,unasHoras){
+unUsuario.reducirHumor(10 * unasHoras)
+}
+}
+
+class JuegoMOBA inherits Juego {
+method jugar(unUsuario, unasHoras){
+unUsuario.comprarSkins()
+}
+}
+
+class JuegoDeTerror inherits Juego {
+method jugar(unUsuario,unasHoras){
+unUsuario.tirarTodoAlCarajo()
+}
+}
+
+class JuegoDeEstrategia inherits Juego {
+method jugar(unUsuario,unasHoras){
+unUsuario.aumentarHumor(5 * unasHoras)
+}
+}
+
+// Herencia
+// Relación estática, no puede cambiar de clase
+// Solo permite implementar un tipo
+// Es más simple
+Composición
+Podemos utilizar la composición. De esta manera, delegamos la lógica de la suscripción a una nueva clase u objeto, la cual cada cliente conocerá a una instancia de esta clase a través de un atributo:
+class Usuario {
+var suscripcion
+
+method puedeJugar(unJuego) {
+return suscripcion.permiteJugar(unJuego)
+}
+
+
+method actualizarSuscripcion(unaSuscripcion) {
+suscripcion = unaSuscripcion
+}
+
+method pagarSuscripcion() {
+if(self.leAlcanzaParaPagar(suscripcion.costo())) {
+self.actualizarSuscripcion(prueba)
+} else {
+plataEnCuenta -= suscripcion.costo()
+}
+}
+}
+La composición es una solución dinámica, que nos ayuda a resolver este tipo de contextos.
+
+// Composición
+// Relación dinámica, si permite cambiar de tipo
+// Implementar multiples tipos
+// Es más difícil
+ 
