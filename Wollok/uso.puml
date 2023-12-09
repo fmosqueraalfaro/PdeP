@@ -1,0 +1,75 @@
+@startuml Estudiantes
+class Estudiante {
+    notas
+    materiasCursadas
+
+    promedio()
+    esEjemplar()
+    cantidadDeExamenesDesaprobados()
+    agregarNota()
+}
+
+
+class Oyente implements Cursante{
+    esEjemplar()
+    promedio()
+    turnoNoche()
+}
+interface Cursante{
+    esEjemplar()
+    promedio()
+}
+
+object docente{
+    cfd
+    estudiantes
+--
+    estudiantesEjemplares()
+    promedioDelCurso()
+    evaluarEstudiantes()
+    notaExamenSorpresa()
+}
+
+object lucia{
+
+}
+
+object juan{
+
+}
+
+object perla{
+
+}
+
+object unOyente{
+
+}
+
+/'Para las clases polimorficas se usa, las interfaces son solo conjuntos de mensajes'/
+Cursante <|.. Estudiante : implementa 
+
+/'Para cuando conoce a "*" cantidad de esa clase'/
+Estudiante "*" <-left- docente : conoce/tiene
+
+/'Se usa cuando un objeto ES una clase'/
+Estudiante <|-- lucia : es
+Estudiante <|-- juan : es
+Estudiante <|-- perla : es
+Oyente <|-- unOyente : es
+
+/'Se usa cuando un objeto lo recibe por parámetro (es la más débil, es cuando algo queda medio desconexo)'/
+Examen <.. docente : usa
+ 
+
+/'
+ver cuando se usa:
+
+Implements: implementa una interfaz (comparte los mismos mensajes que otros, aprovechando el polimorfismo)
+su flecha es ..|>
+
+Extends: hereda de una clase
+su flecha es --|>
+'/
+
+@enduml
